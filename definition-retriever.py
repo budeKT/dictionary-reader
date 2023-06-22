@@ -12,10 +12,14 @@ def get_definition(word):
     else:
         #convert the Json format to python dictionaries
         data = json_text.json()
-        definitions = data[0]["meanings"]
+        meanings = data[0]["meanings"]
         # lists all the definitions
-        for word in definitions:
-            #finsi
+        for item in meanings:
+            print(item["partOfSpeech"].capitalize()+ ":")
+            for number, definitions in enumerate(item["definitions"]):
+               print(f"{number+1}. {definitions['definition']}")
+            print("\n")
+
 
 def main():
     word = input("Enter a Word: ")
