@@ -1,6 +1,6 @@
 # PDF Dictionary
 
-The purpose of this app is to provide users the ability to import a text file and quickly look up the definition of any chosen word in the text file.
+The purpose of this app is to provide users the ability to import a text file and quickly look up the definition of any chosen word in that file.
 
 ## About
 
