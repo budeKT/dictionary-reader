@@ -35,8 +35,7 @@ def get_definition(word):
                     # Some words may have many defs which will get redundant
                     break
         
-def main():
-    word = input("Enter a Word: ")
+def main(word):
     get_definition(word)
     
 if __name__ == '__main__':
