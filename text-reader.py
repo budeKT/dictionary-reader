@@ -16,19 +16,22 @@ def main():
     widthPercent = 20
     heightPercent = 15
 
-    # initialize window. We create root as the "root" application/gui where we will do stuff in.
+    # Root GUI data
     rootHeight = int(screenH * heightPercent / 100)
     rootWidth = int(screenW * widthPercent / 100)
-    root.geometry(str(rootWidth)+"x"+str(rootHeight))
+    xPos = int((screenW/2) - (rootWidth/2))
+    yPos = int((screenH/2) - (rootHeight/2))
+    rootGeo = f"{rootWidth}x{rootHeight}+{xPos}+{yPos}"
+    root.geometry(rootGeo)
     root.resizable(True, True)
 
     # Dictionary button
-    searchButton = tkt.Button(root, text = "Test next window", command = lambda:openWindow(root, "Word Search"))
-    searchButton.pack()
+    searchButton = tkt.Button(root, text = "Define a word", command = lambda:openWindow(root, rootGeo, "Word Search"))
+    searchButton.pack(side = "left", padx = (rootWidth/2), pady = 10)
 
     # PDF reader button
-    readerButton = tkt.Button(root, text = "PDF/Text Reader", command = lambda:openWindow(root, "Import file"))
-    readerButton.pack()
+    readerButton = tkt.Button(root, text = "PDF/Text Reader", command = lambda:openWindow(root, rootGeo, "Import file"))
+    readerButton.pack(side = "left", padx = (rootWidth/2), pady = 10)
 
     # Main menu logic for input
     # chosen = False
@@ -57,17 +60,20 @@ def main():
     root.mainloop() 
 
 
-def openWindow(root, funcName):
+def openWindow(root, windowGeo, funcName):
     # Hides main GUI and creates new one
     root.withdraw()
     new_Window = tkt.Tk()
-    new_Window.title("funcName")
+    new_Window.title(funcName)
+    new_Window.geometry(windowGeo)
 
     # Return back to main menu
-    backButton = tkt.Button(new_Window, text = "Go Back", command = lambda:main())
+    backButton = tkt.Button(new_Window, text = "Go Back", command = lambda:goBack(new_Window))
     backButton.pack()
     
-    # Need to figure out how to close this window if go back is pressed.
+def goBack(new_Window):
+    new_Window.withdraw()
+    main()
 
 def sendWord():
     # Sends a given word to definitionretriever.py
