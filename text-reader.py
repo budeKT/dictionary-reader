@@ -3,7 +3,6 @@ import keyboard as kbd
 import tkinter as tkt
  
 def main():
-
     root = tkt.Tk()
     root.title("PDF Dictionary Main Menu")
 
@@ -21,40 +20,36 @@ def main():
     rootWidth = int(screenW * widthPercent / 100)
     xPos = int((screenW/2) - (rootWidth/2))
     yPos = int((screenH/2) - (rootHeight/2))
-    rootGeo = f"{rootWidth}x{rootHeight}+{xPos}+{yPos}"
-    root.geometry(rootGeo)
+    windowGeo = f"+{xPos}+{yPos}"
+    root.geometry(windowGeo)
     root.resizable(True, True)
 
+    buttonHeight = 1
+    buttonWidth = 12
+
+    tkt.Label(text = "Welcome to PDF Dictionary!").grid(column = 1, row = 0)
+
+    # Empty space so it looks better
+    tkt.Label(text = " ").grid(column = 1, row = 2)
+    tkt.Label(text = " ").grid(column = 1, row = 4)
+
     # Dictionary button
-    searchButton = tkt.Button(root, text = "Define a word", command = lambda:openWindow(root, rootGeo, "Word Search"))
-    searchButton.pack(side = "left", padx = (rootWidth/2), pady = 10)
+    searchButton = tkt.Button(root, height = buttonHeight, width = buttonWidth, 
+                              text = "Define a word", 
+                              command = lambda:wordSearch(root, windowGeo, "Word Search"))
+    searchButton.grid(column = 0, row = 3)
 
     # PDF reader button
-    readerButton = tkt.Button(root, text = "PDF/Text Reader", command = lambda:openWindow(root, rootGeo, "Import file"))
-    readerButton.pack(side = "left", padx = (rootWidth/2), pady = 10)
+    readerButton = tkt.Button(root, height = buttonHeight, width = buttonWidth, 
+                              text = "PDF/Text Reader", 
+                              command = lambda:txtReader(root, windowGeo, "Import file"))
+    readerButton.grid(column = 1, row = 3)
 
-    # Main menu logic for input
-    # chosen = False
-    # while chosen == False:
-    #     print(" [1] Define a word \n", 
-    #           "[2] Import a text file \n",
-    #           "[0] Exit")
-    #     choice = input("Enter your choice: ")
-
-    #     if choice == "1":
-    #         sendWord()
-    #         chosen = True    
-
-    #     elif choice == "2":
-    #         fileIn = input("Enter file name: ") + ".txt"
-    #         importFile(fileIn)
-    #         chosen = True
-
-    #     elif choice == "0":
-    #         break
-
-    #     else:
-    #         print("Invalid input.")
+    # Quit app button
+    quitButton = tkt.Button(root, height = buttonHeight, width = buttonWidth, 
+                            text = "Quit", 
+                            command = root.quit)
+    quitButton.grid(column = 2, row = 3)
 
     # gui loop
     root.mainloop() 
@@ -68,17 +63,35 @@ def openWindow(root, windowGeo, funcName):
     new_Window.geometry(windowGeo)
 
     # Return back to main menu
-    backButton = tkt.Button(new_Window, text = "Go Back", command = lambda:goBack(new_Window))
-    backButton.pack()
-    
-def goBack(new_Window):
-    new_Window.withdraw()
-    main()
+    backButton = tkt.Button(new_Window, text = "Go Back", command = lambda:goBack(root, new_Window))
+    backButton.grid(column = 0, row = 0)
 
-def sendWord():
-    # Sends a given word to definitionretriever.py
-    word = input("Enter a Word: ")
-    define.main(word)
+
+def wordSearch(root, windowGeo, funcName):
+    root.withdraw()
+    wordSearch = tkt.Tk()
+    wordSearch.title(funcName)
+    wordSearch.geometry(windowGeo)
+
+    backButton = tkt.Button(wordSearch, text = "Go Back", command = lambda:goBack(root, wordSearch))
+    backButton.grid(column = 0, row = 0)
+
+
+def txtReader(root, windowGeo, funcName):
+    root.withdraw()
+    txtReader = tkt.Tk()
+    txtReader.title(funcName)
+    txtReader.geometry(windowGeo)
+
+    backButton = tkt.Button(txtReader, text = "Go Back", command = lambda:goBack(root, txtReader))
+    backButton.grid(column = 0, row = 0)
+
+
+
+def goBack(root, new_Window):
+    new_Window.withdraw()
+    root.deiconify()
+    
 
 def importFile(fileIn):
     # Checks if file exists (w/ exception handler)
@@ -98,6 +111,9 @@ def loadFile(line):
     # Loads up file into a tkinter label so user can highlight words.
     pass
 
+
+def winClose(root):
+    root.Destroy()
 
 main()
 
