@@ -1,4 +1,5 @@
 import definitionretriever as define
+from newWindow import Window
 import keyboard as kbd
 import tkinter as tkt
  
@@ -36,13 +37,13 @@ def main():
     # Dictionary button
     searchButton = tkt.Button(root, height = buttonHeight, width = buttonWidth, 
                               text = "Define a word", 
-                              command = lambda:wordSearch(root, windowGeo, "Word Search"))
+                              command = lambda:openWindow(root, windowGeo, "Word Search"))
     searchButton.grid(column = 0, row = 3)
 
     # PDF reader button
     readerButton = tkt.Button(root, height = buttonHeight, width = buttonWidth, 
                               text = "PDF/Text Reader", 
-                              command = lambda:txtReader(root, windowGeo, "Import file"))
+                              command = lambda:openWindow(root, windowGeo, "Import file"))
     readerButton.grid(column = 1, row = 3)
 
     # Quit app button
@@ -55,37 +56,14 @@ def main():
     root.mainloop() 
 
 
-def openWindow(root, windowGeo, funcName):
-    # Hides main GUI and creates new one
-    root.withdraw()
-    new_Window = tkt.Tk()
-    new_Window.title(funcName)
-    new_Window.geometry(windowGeo)
-
-    # Return back to main menu
-    backButton = tkt.Button(new_Window, text = "Go Back", command = lambda:goBack(root, new_Window))
-    backButton.grid(column = 0, row = 0)
-
-
-def wordSearch(root, windowGeo, funcName):
-    root.withdraw()
-    wordSearch = tkt.Tk()
-    wordSearch.title(funcName)
-    wordSearch.geometry(windowGeo)
-
-    backButton = tkt.Button(wordSearch, text = "Go Back", command = lambda:goBack(root, wordSearch))
-    backButton.grid(column = 0, row = 0)
-
-
-def txtReader(root, windowGeo, funcName):
-    root.withdraw()
-    txtReader = tkt.Tk()
-    txtReader.title(funcName)
-    txtReader.geometry(windowGeo)
-
-    backButton = tkt.Button(txtReader, text = "Go Back", command = lambda:goBack(root, txtReader))
-    backButton.grid(column = 0, row = 0)
-
+def openWindow(root, windowGeo, name):
+    if name == "Word Search":
+        searchWindow = Window(root, windowGeo, name)
+        searchWindow.createWindow()
+       
+    elif name == "Import file":
+        readerWindow = Window(root, windowGeo, name)
+        readerWindow.createWindow()
 
 
 def goBack(root, new_Window):
