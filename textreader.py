@@ -58,12 +58,21 @@ def main():
 
 def openWindow(root, windowGeo, name):
     if name == "Word Search":
-        searchWindow = Window(root, windowGeo, name)
+        wordInstance = tkt.Tk()
+        searchWindow = Window(root, wordInstance, windowGeo, name)
         searchWindow.createWindow()
+
+        backButton = tkt.Button(wordInstance, text = "Go Back", command = lambda:goBack(root, wordInstance))
+        backButton.grid(column = 0, row = 0)
+
        
     elif name == "Import file":
-        readerWindow = Window(root, windowGeo, name)
+        readerInstance = tkt.Tk()
+        readerWindow = Window(root, readerInstance, windowGeo, name)
         readerWindow.createWindow()
+        
+        backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
+        backButton.grid(column = 0, row = 0)
 
 
 def goBack(root, new_Window):
