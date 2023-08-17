@@ -26,17 +26,25 @@ def get_definition(word):
                     print(f"{number+1}. {definitions['definition']}")
                     print(f"Example: {definitions['example']}")
                     print("\n")
+                    return definitions['definition']
 
                 elif number < 4:
                     print(f"{number+1}. {definitions['definition']}")
                     print("\n")
-                
+                    return definitions['definition']
                 else:
                     # Some words may have many defs which will get redundant
                     break
+
+            
         
 def main(word):
-    get_definition(word)
+    definedWord = get_definition(word)
+
+    if definedWord == None:
+        return "Word not found. Please try again."
+    else:
+        return definedWord
     
 if __name__ == '__main__':
     main()
