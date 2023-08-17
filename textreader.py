@@ -65,7 +65,7 @@ def openWindow(root, windowGeo, name):
         searchWindow = Window(root, wordInstance, windowGeo, name)
         searchWindow.createWindow()
         
-        tkt.Label(wordInstance, text = "Enter a word").grid(column = 1, row = 0)
+        tkt.Label(wordInstance, text = "Enter a word to define.").grid(column = 1, row = 0)
         wordLabel = tkt.Label(wordInstance, text = " ")
         wordLabel.grid(column = 1, row = 1)
 
@@ -85,19 +85,38 @@ def openWindow(root, windowGeo, name):
         readerInstance = tkt.Tk()
         readerWindow = Window(root, readerInstance, windowGeo, name)
         readerWindow.createWindow()
+        tkt.Label(readerInstance, text = "Enter directory of file: ").grid(column = 1, row = 1)
+        
+
+        dirInput = tkt.Text(readerInstance,
+                                  height = 1,
+                                  width = 30)
+        dirInput.grid(column = 1, row =2)
+        directory = dirInput.get(1.0, "end-1c")
+        importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(directory))
+        importButton.grid(column = 1, row = 3)
+        
+
+        fileText = tkt.Text(readerInstance,
+                            height = 30,
+                            width = 35)
+        fileText.grid(column = 1, row = 4)
+        fileText.insert("1.0", "Please enter directory of a text file in order to read.")
+
+        enterButton = tkt.Button(readerInstance, text = "Enter", command = lambda:enterWord(readerInstance, wordInput, wordLabel))
+        enterButton.grid(column = 1, row = 5)
         
         backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
-        backButton.grid(column = 0, row = 0)
+        backButton.grid(column = 1, row = 6)
 
         
 def goBack(root, new_Window):
     new_Window.withdraw()
-    
     root.deiconify()
     
 # enterWord() will take the word that the user inputs into the textbox and stores it in a variable.
 # It will then send the word to definitionretriever.py so it can be requested from the Dictionary API.
-def enterWord(wordInstance, wordInput, wordLabel):
+def enterWord(windowInstance, wordInput, wordLabel):
     # Stores user input
     userWord = wordInput.get(1.0, "end-1c")
     wordLabel.config(text = " ")
