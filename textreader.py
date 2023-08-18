@@ -141,7 +141,7 @@ def importFile(Instance, fileIn, fileText):
         fileIn = open(fileIn.get(1.0, "end-1c"), "r")
         line = list(fileIn.readlines())
         for i in range(len(line)):
-            fileText.insert("1.0", line[i])
+            fileText.insert(tkt.END, line[i])
         fileIn.close()
         loadFile(line)
     
