@@ -82,20 +82,18 @@ def openWindow(root, windowGeo, name):
 
     # Creates a new window for the PDF reader 
     elif name == "Import file":
+        # Create the window
         readerInstance = tkt.Tk()
         readerWindow = Window(root, readerInstance, windowGeo, name)
         readerWindow.createWindow()
         tkt.Label(readerInstance, text = "Enter directory of file: ").grid(column = 1, row = 1)
-        
 
-        dirInput = tkt.Text(readerInstance,
+        # Create textboxes in the window
+        fileIn = tkt.Text(readerInstance,
                                   height = 1,
                                   width = 30)
-        dirInput.grid(column = 1, row =2)
-        directory = dirInput.get(1.0, "end-1c")
-        importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(directory))
-        importButton.grid(column = 1, row = 3)
-        
+        fileIn.grid(column = 1, row =2)
+        directory = fileIn.get(1.0, "end-1c")
 
         fileText = tkt.Text(readerInstance,
                             height = 30,
@@ -103,7 +101,11 @@ def openWindow(root, windowGeo, name):
         fileText.grid(column = 1, row = 4)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
 
-        enterButton = tkt.Button(readerInstance, text = "Enter", command = lambda:enterWord(readerInstance, wordInput, wordLabel))
+        # Create buttons in the window
+        importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
+        importButton.grid(column = 1, row = 3)
+
+        enterButton = tkt.Button(readerInstance, text = "Enter", command = lambda:enterWord(wordInstance, wordInput, wordLabel))
         enterButton.grid(column = 1, row = 5)
         
         backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
@@ -123,7 +125,7 @@ def enterWord(windowInstance, wordInput, wordLabel):
 
     # Retrieve definition
     if " " in userWord:
-        wordLabel = tkt.config(text = "Invalid word! Please enter a single word to define.")
+        wordLabel.config(text = "Invalid word! Please enter a single word to define.")
         
     else:
         # Displays user input
@@ -132,17 +134,20 @@ def enterWord(windowInstance, wordInput, wordLabel):
 
 
 # importFile() Will import the file and checks if file exists (w/ exception handler)
-def importFile(fileIn):
+def importFile(Instance, fileIn, fileText):
+    
     try:
-        fileIn = open(fileIn, "r")
+        fileText.delete("1.0", tkt.END)
+        fileIn = open(fileIn.get(1.0, "end-1c"), "r")
         line = list(fileIn.readlines())
         for i in range(len(line)):
-            print(line[i])
+            fileText.insert("1.0", line[i])
         fileIn.close()
         loadFile(line)
     
     except FileNotFoundError:
-       print("File does not exist. Please check for spelling and if it's in the working directory.")
+       message = "File could not be found. Please check for spelling."
+       return message
 
 
 def loadFile(line):
