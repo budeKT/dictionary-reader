@@ -158,15 +158,17 @@ def importFile(Instance, fileIn, fileText):
        return message
 
 def fileSelectedText(textbox):
-    #if there is any text selected
+    #if there is any text
     if textbox.tag_ranges("sel"):
         selectedText = textbox.get("sel.first", "sel.last")
         if selectedText:
             return selectedText
 def defFind(wordInput, wordLabel):
-    wordInput 
-    definition = define.main(wordInput)
-    wordLabel.config(text = f"Definition of {wordInput}: {definition}")
+    if " " in wordInput.strip():
+        wordLabel.config(text = "Invalid word! Please enter a single word to define.")
+    else:
+        definition = define.main(wordInput)
+        wordLabel.config(text = f"Definition of {wordInput}: {definition}")
 
 def winClose(root):
     root.Destroy()
