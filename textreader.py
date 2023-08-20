@@ -2,6 +2,7 @@ import definitionretriever as define
 from newWindow import Window
 import keyboard as kbd
 import tkinter as tkt
+from tkinter import messagebox
  
 def main():
     root = tkt.Tk()
@@ -88,6 +89,10 @@ def openWindow(root, windowGeo, name):
         readerWindow.createWindow()
         tkt.Label(readerInstance, text = "Enter directory of file: ").grid(column = 1, row = 1)
 
+        # create a label with left alignment
+        wordLabel = tkt.Label(readerInstance, text = "Definitions listed here", height= 1, width = 35, anchor = "w")
+
+        wordLabel.grid(column = 1, row = 4)
         # Create textboxes in the window
         fileIn = tkt.Text(readerInstance,
                                   height = 1,
@@ -98,18 +103,21 @@ def openWindow(root, windowGeo, name):
         fileText = tkt.Text(readerInstance,
                             height = 30,
                             width = 35)
-        fileText.grid(column = 1, row = 4)
+        fileText.grid(column = 1, row = 5)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
-
-        # Create buttons in the window
+        
+        fileText.bind("<<Selection>>",lambda selectedTest: fileSelectedText(fileText))
+         # Create buttons in the window
         importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
         importButton.grid(column = 1, row = 3)
 
-        enterButton = tkt.Button(readerInstance, text = "Enter", command = lambda:enterWord(wordInstance, wordInput, wordLabel))
-        enterButton.grid(column = 1, row = 5)
+        
+
+        searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel= wordLabel))
+        searchButton.grid(column = 1, row = 6)
         
         backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
-        backButton.grid(column = 1, row = 6)
+        backButton.grid(column = 1, row = 7)
 
         
 def goBack(root, new_Window):
@@ -124,7 +132,7 @@ def enterWord(windowInstance, wordInput, wordLabel):
     wordLabel.config(text = " ")
 
     # Retrieve definition
-    if " " in userWord:
+    if " " in userWord.strip():
         wordLabel.config(text = "Invalid word! Please enter a single word to define.")
         
     else:
@@ -143,20 +151,26 @@ def importFile(Instance, fileIn, fileText):
         for i in range(len(line)):
             fileText.insert(tkt.END, line[i])
         fileIn.close()
-        loadFile(line)
-    
+        
+        
     except FileNotFoundError:
        message = "File could not be found. Please check for spelling."
        return message
 
-
-def loadFile(line):
-    # Loads up file into a tkinter label so user can highlight words.
-    pass
-
+def fileSelectedText(textbox):
+    #if there is any text selected
+    if textbox.tag_ranges("sel"):
+        selectedText = textbox.get("sel.first", "sel.last")
+        if selectedText:
+            return selectedText
+def defFind(wordInput, wordLabel):
+    wordInput 
+    definition = define.main(wordInput)
+    wordLabel.config(text = f"Definition of {wordInput}: {definition}")
 
 def winClose(root):
     root.Destroy()
+
 
 main()
 
