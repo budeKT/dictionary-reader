@@ -34,9 +34,9 @@ def get_definition(word):
                     return definitions['definition']
                 else:
                     # Some words may have many defs which will get redundant
+                    return definitions['definition']
                     break
 
-            
         
 def main(word):
     definedWord = get_definition(word)

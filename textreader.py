@@ -90,9 +90,9 @@ def openWindow(root, windowGeo, name):
         tkt.Label(readerInstance, text = "Enter directory of file: ").grid(column = 1, row = 1)
 
         # create a label with left alignment
-        wordLabel = tkt.Label(readerInstance, text = "Definitions listed here", height= 1, width = 35, anchor = "w")
-
+        wordLabel = tkt.Label(readerInstance, text = "Definitions listed here")
         wordLabel.grid(column = 1, row = 4)
+
         # Create textboxes in the window
         fileIn = tkt.Text(readerInstance,
                                   height = 1,
@@ -102,8 +102,11 @@ def openWindow(root, windowGeo, name):
 
         fileText = tkt.Text(readerInstance,
                             height = 30,
-                            width = 35)
-        fileText.grid(column = 1, row = 5)
+                            width = 70,
+                            wrap = tkt.WORD,
+                            undo = True)
+            
+        fileText.grid(column = 1, row = 7)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
         
         fileText.bind("<<Selection>>",lambda selectedTest: fileSelectedText(fileText))
@@ -111,13 +114,17 @@ def openWindow(root, windowGeo, name):
         importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
         importButton.grid(column = 1, row = 3)
 
-        
+        nextButton = tkt.Button(readerInstance, text = "Next Definition", command = lambda:rotateDef(readerInstance, "Next"))
+        nextButton.grid(column = 1, row = 5)
+
+        prevButton = tkt.Button(readerInstance, text = "Prev Definition", command = lambda:rotateDef(readerInstance, "Prev"))
+        prevButton.grid(column = 1, row = 6)
 
         searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel= wordLabel))
-        searchButton.grid(column = 1, row = 6)
+        searchButton.grid(column = 1, row = 8)
         
         backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
-        backButton.grid(column = 1, row = 7)
+        backButton.grid(column = 1, row = 9)
 
         
 def goBack(root, new_Window):
@@ -140,6 +147,9 @@ def enterWord(windowInstance, wordInput, wordLabel):
         wordDefinition = define.main(userWord)
         wordLabel.config(text = f"Definition of {userWord}: {wordDefinition}")
 
+def rotateDef():
+    pass
+
 
 # importFile() Will import the file and checks if file exists (w/ exception handler)
 def importFile(Instance, fileIn, fileText):
@@ -149,6 +159,11 @@ def importFile(Instance, fileIn, fileText):
         fileIn = open(fileIn.get(1.0, "end-1c"), "r")
         line = list(fileIn.readlines())
         for i in range(len(line)):
+            # Fixes unicode errors (e.g, â€™ instead of ')
+            textEncode = line[i].encode('cp1252')
+            textDecode = textEncode.decode('utf-8')
+            line.pop(i)
+            line.insert(i, textDecode)
             fileText.insert(tkt.END, line[i])
         fileIn.close()
         
@@ -157,6 +172,7 @@ def importFile(Instance, fileIn, fileText):
        message = "File could not be found. Please check for spelling."
        return message
 
+    
 def fileSelectedText(textbox):
     #if there is any text
     if textbox.tag_ranges("sel"):
@@ -170,9 +186,10 @@ def defFind(wordInput, wordLabel):
         definition = define.main(wordInput)
         wordLabel.config(text = f"Definition of {wordInput}: {definition}")
 
+    return
+
 def winClose(root):
     root.Destroy()
-
 
 main()
 
