@@ -70,16 +70,19 @@ def openWindow(root, windowGeo, name):
         wordLabel = tkt.Label(wordInstance, text = " ")
         wordLabel.grid(column = 1, row = 1)
 
+        exampleLabel = tkt.Label(wordInstance, text = "Example: ")
+        exampleLabel.grid(column = 1, row = 2)
+
         wordInput = tkt.Text(wordInstance,
                             height = 1,
                             width = 25)
-        wordInput.grid(column = 1, row = 2)
+        wordInput.grid(column = 1, row = 3)
 
-        enterButton = tkt.Button(wordInstance, text = "Enter", command = lambda:enterWord(wordInstance, wordInput, wordLabel))
-        enterButton.grid(column = 1, row = 3)
+        enterButton = tkt.Button(wordInstance, text = "Enter", command = lambda:getWord(wordInput, wordLabel, exampleLabel))
+        enterButton.grid(column = 1, row = 4)
 
         backButton = tkt.Button(wordInstance, text = "Go Back", command = lambda:goBack(root, wordInstance))
-        backButton.grid(column = 1, row = 4)
+        backButton.grid(column = 1, row = 5)
 
     # Creates a new window for the PDF reader 
     elif name == "Import file":
@@ -92,6 +95,9 @@ def openWindow(root, windowGeo, name):
         # create a label with left alignment
         wordLabel = tkt.Label(readerInstance, text = "Definitions listed here")
         wordLabel.grid(column = 1, row = 4)
+
+        exampleLabel = tkt.Label(readerInstance, text = "Example: ")
+        exampleLabel.grid(column = 1, row = 5)
 
         # Create textboxes in the window
         fileIn = tkt.Text(readerInstance,
@@ -106,25 +112,26 @@ def openWindow(root, windowGeo, name):
                             wrap = tkt.WORD,
                             undo = True)
             
-        fileText.grid(column = 1, row = 7)
+        fileText.grid(column = 1, row = 8)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
-        
         fileText.bind("<<Selection>>",lambda selectedTest: fileSelectedText(fileText))
+
+        index = 0
          # Create buttons in the window
         importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
         importButton.grid(column = 1, row = 3)
 
-        nextButton = tkt.Button(readerInstance, text = "Next Definition", command = lambda:rotateDef(readerInstance, "Next"))
-        nextButton.grid(column = 1, row = 5)
+        nextButton = tkt.Button(readerInstance, text = "Next Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Next", index = index))
+        nextButton.grid(column = 1, row = 6)
 
-        prevButton = tkt.Button(readerInstance, text = "Prev Definition", command = lambda:rotateDef(readerInstance, "Prev"))
-        prevButton.grid(column = 1, row = 6)
+        prevButton = tkt.Button(readerInstance, text = "Prev Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Prev", index = index))
+        prevButton.grid(column = 1, row = 7)
 
-        searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel= wordLabel))
-        searchButton.grid(column = 1, row = 8)
+        searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Search", index = index))
+        searchButton.grid(column = 1, row = 9)
         
         backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
-        backButton.grid(column = 1, row = 9)
+        backButton.grid(column = 1, row = 10)
 
         
 def goBack(root, new_Window):
@@ -133,22 +140,15 @@ def goBack(root, new_Window):
     
 # enterWord() will take the word that the user inputs into the textbox and stores it in a variable.
 # It will then send the word to definitionretriever.py so it can be requested from the Dictionary API.
-def enterWord(windowInstance, wordInput, wordLabel):
+def getWord(wordInput, wordLabel, exampleLabel):
     # Stores user input
     userWord = wordInput.get(1.0, "end-1c")
     wordLabel.config(text = " ")
-
-    # Retrieve definition
     if " " in userWord.strip():
-        wordLabel.config(text = "Invalid word! Please enter a single word to define.")
-        
+        wordLabel.config(text = "Invalid word. Please enter a single word to define.")
+    
     else:
-        # Displays user input
-        wordDefinition = define.main(userWord)
-        wordLabel.config(text = f"Definition of {userWord}: {wordDefinition}")
-
-def rotateDef():
-    pass
+        defFind(userWord, wordLabel, exampleLabel)
 
 
 # importFile() Will import the file and checks if file exists (w/ exception handler)
@@ -179,14 +179,25 @@ def fileSelectedText(textbox):
         selectedText = textbox.get("sel.first", "sel.last")
         if selectedText:
             return selectedText
-def defFind(wordInput, wordLabel):
+def defFind(wordInput, wordLabel, exampleLabel, name, index):
     if " " in wordInput.strip():
         wordLabel.config(text = "Invalid word! Please enter a single word to define.")
+    elif name == "Next":
+        index += 1
+        partOfSpeech, definitions, example = define.main(wordInput)
+        wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
+        exampleLabel.config(text = f"Example: {example[index]}")
+        return index
+    elif name == "Prev":
+        index -= 1
+        partOfSpeech, definitions, example = define.main(wordInput)
+        wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
+        exampleLabel.config(text = f"Example: {example[index]}")
+        return index
     else:
-        definition = define.main(wordInput)
-        wordLabel.config(text = f"Definition of {wordInput}: {definition}")
-
-    return
+        partOfSpeech, definitions, example = define.main(wordInput)
+        wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
+        exampleLabel.config(text = f"Example: {example[index]}")
 
 def winClose(root):
     root.Destroy()

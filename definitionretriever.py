@@ -8,7 +8,6 @@ def get_definition(word):
     # sends a request to the dictionary API and stores the dictionary
     json_text = requests.get(Base_URL + word)
     # if the word is not found
-    maxDefs = 4
     # Max amount of definitions to retrieve
     if json_text.status_code == 404:
         print("Word not found")
@@ -16,28 +15,29 @@ def get_definition(word):
         #convert the Json format to python dictionaries
         data = json_text.json()
         meanings = data[0]["meanings"]
+        partOfSpeech = []
+        definition = []
+        example = []
         # lists all the definitions
         for item in meanings:
-            print(item["partOfSpeech"].capitalize()+ ":")
+            # print(item["partOfSpeech"].capitalize()+ ":")
             for number, definitions in enumerate(item["definitions"]):
-
-                if (len(definitions) == 4) and (number <= maxDefs - 1):
+                
+                if (len(definitions) == 4):
                     # different partOfSpeech may not have any examples.
-                    print(f"{number+1}. {definitions['definition']}")
-                    print(f"Example: {definitions['example']}")
-                    print("\n")
-                    return definitions['definition']
-
-                elif number < 4:
-                    print(f"{number+1}. {definitions['definition']}")
-                    print("\n")
-                    return definitions['definition']
+                    # print(f"{number+1}. {definitions['definition']}")
+                    # print(f"Example: {definitions['example']}")          
+                    partOfSpeech.append(item["partOfSpeech"])
+                    definition.append(definitions['definition'])
+                    example.append(definitions['example'])
+                
                 else:
-                    # Some words may have many defs which will get redundant
-                    return definitions['definition']
-                    break
-
+                    # print(f"{number+1}. {definitions['definition']}")
+                    partOfSpeech.append(item["partOfSpeech"])
+                    definition.append(definitions['definition'])
+                    example.append("None")
         
+        return partOfSpeech, definition, example
 def main(word):
     definedWord = get_definition(word)
 
