@@ -2,7 +2,7 @@ import definitionretriever as define
 from newWindow import Window
 import keyboard as kbd
 import tkinter as tkt
-from tkinter import messagebox
+from tkinter import scrolledtext
  
 def main():
     root = tkt.Tk()
@@ -105,9 +105,9 @@ def openWindow(root, windowGeo, name):
                                   width = 30)
         fileIn.grid(column = 1, row =2)
         directory = fileIn.get(1.0, "end-1c")
-
-        fileText = tkt.Text(readerInstance,
-                            height = 30,
+       
+        fileText = scrolledtext.ScrolledText(readerInstance,
+                            height = 25,
                             width = 70,
                             wrap = tkt.WORD,
                             undo = True)
@@ -115,7 +115,7 @@ def openWindow(root, windowGeo, name):
         fileText.grid(column = 1, row = 8)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
         fileText.bind("<<Selection>>",lambda selectedTest: fileSelectedText(fileText))
-
+        
         index = 0
          # Create buttons in the window
         importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
