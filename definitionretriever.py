@@ -22,7 +22,6 @@ def get_definition(word):
         for item in meanings:
             # print(item["partOfSpeech"].capitalize()+ ":")
             for number, definitions in enumerate(item["definitions"]):
-                
                 if (len(definitions) == 4):
                     # different partOfSpeech may not have any examples.
                     # print(f"{number+1}. {definitions['definition']}")
@@ -30,14 +29,15 @@ def get_definition(word):
                     partOfSpeech.append(item["partOfSpeech"])
                     definition.append(definitions['definition'])
                     example.append(definitions['example'])
-                
                 else:
                     # print(f"{number+1}. {definitions['definition']}")
                     partOfSpeech.append(item["partOfSpeech"])
                     definition.append(definitions['definition'])
-                    example.append("None")
+                    example.append("Not Available.")\
+                    
+            maxIndex = len(definition)
         
-        return partOfSpeech, definition, example
+        return partOfSpeech, definition, example, maxIndex
 def main(word):
     definedWord = get_definition(word)
 

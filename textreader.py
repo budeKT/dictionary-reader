@@ -7,12 +7,11 @@ from tkinter import scrolledtext
 def main():
     root = tkt.Tk()
     root.title("PDF Dictionary Main Menu")
-
     # Calculate the aspect ratio of any given screen dimensions.
     # winfo_screenwidth obtains the width of the user's screen.
     screenW = root.winfo_screenwidth()
     screenH = root.winfo_screenheight()
-    
+
     # Rescales the root window to take up a percentage of the user's screen.
     widthPercent = 20
     heightPercent = 15
@@ -78,11 +77,17 @@ def openWindow(root, windowGeo, name):
                             width = 25)
         wordInput.grid(column = 1, row = 3)
 
-        enterButton = tkt.Button(wordInstance, text = "Enter", command = lambda:getWord(wordInput, wordLabel, exampleLabel))
-        enterButton.grid(column = 1, row = 4)
+        searchButton = tkt.Button(wordInstance, text = "Search", command = lambda:getWord(wordInput, wordLabel, exampleLabel, "Search"))
+        searchButton.grid(column = 1, row = 4)
 
-        backButton = tkt.Button(wordInstance, text = "Go Back", command = lambda:goBack(root, wordInstance))
-        backButton.grid(column = 1, row = 5)
+        backButton = tkt.Button(wordInstance, text = "Back", command = lambda:goBack(root, wordInstance))
+        backButton.grid(column = 1, row = 7)
+
+        nextButton = tkt.Button(wordInstance, text = "Next Definition", command = lambda:getWord(wordInput, wordLabel, exampleLabel, "Next"))
+        nextButton.grid(column = 1, row = 5)
+
+        prevButton = tkt.Button(wordInstance, text = "Prev Definition", command = lambda:getWord(wordInput, wordLabel, exampleLabel, "Prev"))
+        prevButton.grid(column = 1, row = 6)
 
     # Creates a new window for the PDF reader 
     elif name == "Import file":
@@ -115,22 +120,21 @@ def openWindow(root, windowGeo, name):
         fileText.grid(column = 1, row = 8)
         fileText.insert("1.0", "Please enter directory of a text file in order to read.")
         fileText.bind("<<Selection>>",lambda selectedTest: fileSelectedText(fileText))
-        
-        index = 0
+
          # Create buttons in the window
         importButton = tkt.Button(readerInstance, text = "Import File", command = lambda:importFile(readerInstance, fileIn, fileText))
         importButton.grid(column = 1, row = 3)
 
-        nextButton = tkt.Button(readerInstance, text = "Next Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Next", index = index))
+        nextButton = tkt.Button(readerInstance, text = "Next Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Next"))
         nextButton.grid(column = 1, row = 6)
 
-        prevButton = tkt.Button(readerInstance, text = "Prev Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Prev", index = index))
+        prevButton = tkt.Button(readerInstance, text = "Prev Definition", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Prev"))
         prevButton.grid(column = 1, row = 7)
 
-        searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Search", index = index))
+        searchButton = tkt.Button(readerInstance, text = "Search", command = lambda:defFind(wordInput = fileSelectedText(fileText), wordLabel = wordLabel, exampleLabel = exampleLabel, name = "Search"))
         searchButton.grid(column = 1, row = 9)
         
-        backButton = tkt.Button(readerInstance, text = "Go Back", command = lambda:goBack(root, readerInstance))
+        backButton = tkt.Button(readerInstance, text = "Back", command = lambda:goBack(root, readerInstance))
         backButton.grid(column = 1, row = 10)
 
         
@@ -140,15 +144,14 @@ def goBack(root, new_Window):
     
 # enterWord() will take the word that the user inputs into the textbox and stores it in a variable.
 # It will then send the word to definitionretriever.py so it can be requested from the Dictionary API.
-def getWord(wordInput, wordLabel, exampleLabel):
+def getWord(wordInput, wordLabel, exampleLabel, name):
     # Stores user input
     userWord = wordInput.get(1.0, "end-1c")
     wordLabel.config(text = " ")
     if " " in userWord.strip():
         wordLabel.config(text = "Invalid word. Please enter a single word to define.")
-    
     else:
-        defFind(userWord, wordLabel, exampleLabel)
+        defFind(userWord, wordLabel, exampleLabel, name)
 
 
 # importFile() Will import the file and checks if file exists (w/ exception handler)
@@ -179,25 +182,32 @@ def fileSelectedText(textbox):
         selectedText = textbox.get("sel.first", "sel.last")
         if selectedText:
             return selectedText
-def defFind(wordInput, wordLabel, exampleLabel, name, index):
+def defFind(wordInput, wordLabel, exampleLabel, name):
+    partOfSpeech, definitions, example, maxIndex = define.main(wordInput)
+
     if " " in wordInput.strip():
         wordLabel.config(text = "Invalid word! Please enter a single word to define.")
-    elif name == "Next":
-        index += 1
-        partOfSpeech, definitions, example = define.main(wordInput)
+    elif name == "Search":
+        global index
+        index = 0
         wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
         exampleLabel.config(text = f"Example: {example[index]}")
         return index
-    elif name == "Prev":
+    elif name == "Next" and index < maxIndex-1:
+        index += 1
+        wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
+        exampleLabel.config(text = f"Example: {example[index]}")
+        return index
+    elif name == "Prev" and index < maxIndex-1:
         index -= 1
-        partOfSpeech, definitions, example = define.main(wordInput)
         wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
         exampleLabel.config(text = f"Example: {example[index]}")
         return index
     else:
-        partOfSpeech, definitions, example = define.main(wordInput)
+        index = 0
         wordLabel.config(text = f"Definition of {wordInput}, {partOfSpeech[index]}: {definitions[index]}")
         exampleLabel.config(text = f"Example: {example[index]}")
+        return index
 
 def winClose(root):
     root.Destroy()
